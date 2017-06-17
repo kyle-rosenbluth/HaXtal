@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE RecursiveDo #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -10,6 +11,7 @@ import Reflex.Dom
 import Control.Monad.IO.Class
 import qualified Data.Text as T
 import qualified Data.Map as Map
+import Data.FileEmbed
 import Data.JSString hiding (concat, count)
 import Data.Monoid
 import Test.QuickCheck
@@ -20,7 +22,7 @@ import qualified GHCJS.DOM.Types as DOM
 import qualified GHCJS.DOM.JSFFI.Generated.HTMLCanvasElement as CVS
 
 main :: IO ()
-main = mainWidget $ do
+main = mainWidgetWithCss css $ do
   rec
     let defLsys = lsysFromDD 1
         u = T.unpack
@@ -90,6 +92,7 @@ main = mainWidget $ do
                   , (\x -> mempty {lscLevels = x}) . u <$> value levelsText
                   ] ) generateButton
   return ()
+    where css = $(embedFile "../css/skeleton.css") <> $(embedFile "../css/normalize.css")
 
 getPathsForLSysComps lsc@(LSysComps _ _ _ _ levels) = getPaths l (getLSystem lsc)
   where
